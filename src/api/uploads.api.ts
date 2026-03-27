@@ -2,6 +2,11 @@ import axios from "axios";
 import type { UploadImageResponse } from '../types/api.types';
 import { buildAbsoluteApiUrl } from "../utils/api-base.utils";
 
+type UploadEndpointPayload =
+  | UploadImageResponse
+  | { data?: UploadImageResponse | null }
+  | { url?: string; data?: { url?: string } };
+
 const resolveUploadErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
     const status = error.response?.status;
@@ -45,7 +50,7 @@ export const uploadProductImage = async (
   formData.append("file", file);
 
   try {
-    const { data } = await axios.post<UploadImageResponse>(
+    const { data } = await axios.post<UploadEndpointPayload>(
       buildAbsoluteApiUrl("/api/uploads/image"),
       formData,
       {
@@ -55,7 +60,18 @@ export const uploadProductImage = async (
       },
     );
 
-    const publicUrl = data.url?.trim();
+    const directUrl =
+      data && typeof data === 'object' && 'url' in data && typeof data.url === 'string'
+        ? data.url
+        : undefined;
+    const nestedData =
+      data && typeof data === 'object' && 'data' in data ? data.data : undefined;
+    const nestedUrl =
+      nestedData && typeof nestedData === 'object' && 'url' in nestedData
+        ? (nestedData.url as string | undefined)
+        : undefined;
+
+    const publicUrl = (directUrl ?? nestedUrl)?.trim();
 
     if (!publicUrl) {
       throw new Error(
