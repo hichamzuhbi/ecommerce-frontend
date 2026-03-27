@@ -16,6 +16,7 @@ import {
 } from '../../hooks/useAdminCategories';
 import { productsApi } from '../../api/products.api';
 import { generateSlug } from '../../utils/slug.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 import type { Category } from '../../types/category.types';
 
 const categorySchema = z.object({
@@ -172,9 +173,10 @@ export const AdminCategoriesPage = () => {
                 <article key={category.id} className="flex items-center justify-between rounded-xl border border-gray-200 p-3">
                   <div className="flex items-center gap-3">
                     <img
-                      src={category.imageUrl ?? 'https://placehold.co/48x48'}
+                      src={resolveImageUrl(category.imageUrl ?? '') || IMAGE_FALLBACK_URL}
                       alt={category.name}
                       className="h-10 w-10 rounded-lg object-cover"
+                      onError={handleImageError}
                     />
                     <div>
                       <p className="font-semibold text-gray-900">{category.name}</p>

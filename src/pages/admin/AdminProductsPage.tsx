@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { useAdminProducts, useDeleteProduct } from '../../hooks/useAdminProducts';
 import type { Product } from '../../types/product.types';
 import { formatPrice } from '../../utils/format.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 
 const stockClass = (stock: number): string => {
   if (stock <= 10) return 'text-red-600';
@@ -38,7 +39,12 @@ export const AdminProductsPage = () => {
         key: 'image',
         header: 'Image',
         render: (product: Product) => (
-          <img src={product.imageUrl} alt={product.name} className="h-10 w-10 rounded object-cover" />
+          <img
+            src={resolveImageUrl(product.imageUrl) || IMAGE_FALLBACK_URL}
+            alt={product.name}
+            className="h-10 w-10 rounded object-cover"
+            onError={handleImageError}
+          />
         ),
       },
       { key: 'name', header: 'Name', render: (product: Product) => product.name },

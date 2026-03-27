@@ -9,6 +9,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { formatPrice } from '../utils/format.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../utils/image.utils';
 
 export const WishlistPage = () => {
   const [search, setSearch] = useState('');
@@ -70,10 +71,11 @@ export const WishlistPage = () => {
                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                       <Link to={`/products/${product.id}`} className="block h-full w-full">
                         <img
-                          src={product.imageUrl}
+                          src={resolveImageUrl(product.imageUrl) || IMAGE_FALLBACK_URL}
                           alt={product.name}
                           className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                           loading="lazy"
+                          onError={handleImageError}
                         />
                       </Link>
                       <button

@@ -6,6 +6,7 @@ import { useAdminOrders, useUpdateOrderStatus } from '../../hooks/useAdminOrders
 import type { AdminOrderFilters, Order, OrderStatus } from '../../types/order.types';
 import { formatDate, formatOrderRef, formatPrice } from '../../utils/format.utils';
 import { getOrderCustomerName } from '../../utils/order.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 
 const ORDER_STATUSES: Array<OrderStatus> = [
   'PENDING',
@@ -184,7 +185,12 @@ export const AdminOrdersPage = () => {
                 <div className="mt-3 space-y-2">
                   {order.items.map((item) => (
                     <article key={item.id} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
-                      <img src={item.product.imageUrl} alt={item.product.name} className="h-12 w-12 rounded-lg object-cover" />
+                      <img
+                        src={resolveImageUrl(item.product.imageUrl) || IMAGE_FALLBACK_URL}
+                        alt={item.product.name}
+                        className="h-12 w-12 rounded-lg object-cover"
+                        onError={handleImageError}
+                      />
                       <div className="flex-1">
                         <p className="font-semibold text-gray-900">{item.product.name}</p>
                         <p className="text-sm text-gray-600">

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { formatPrice } from '../../utils/format.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 import { useWishlist } from '../../context/WishlistContext';
 import type { Product } from '../../types/product.types';
 
@@ -25,12 +26,13 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       <div className="relative block aspect-square overflow-hidden bg-gray-100">
         <Link to={`/products/${product.id}`} className="block h-full w-full">
           <motion.img
-            src={product.imageUrl}
+            src={resolveImageUrl(product.imageUrl) || IMAGE_FALLBACK_URL}
             alt={product.name}
             className="h-full w-full object-cover"
             whileHover={{ scale: 1.08 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
             loading="lazy"
+            onError={handleImageError}
           />
         </Link>
 

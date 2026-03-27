@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ImagePlus, Link2, Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '../ui/Button';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 
 interface ImageUploaderProps {
   value: string[];
@@ -19,7 +20,7 @@ const loadImage = (url: string): Promise<void> => {
     const image = new Image();
     image.onload = () => resolve();
     image.onerror = () => reject(new Error('Invalid image URL'));
-    image.src = url;
+    image.src = resolveImageUrl(url) || IMAGE_FALLBACK_URL;
   });
 };
 
@@ -168,7 +169,12 @@ export const ImageUploader = ({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {value.map((url, index) => (
             <div key={`${url}-${index}`} className="relative overflow-hidden rounded-xl border border-gray-200">
-              <img src={url} alt={`Preview ${index + 1}`} className="h-24 w-full object-cover" />
+              <img
+                src={resolveImageUrl(url) || IMAGE_FALLBACK_URL}
+                alt={`Preview ${index + 1}`}
+                className="h-24 w-full object-cover"
+                onError={handleImageError}
+              />
               <button
                 type="button"
                 onClick={() => removeAt(index)}

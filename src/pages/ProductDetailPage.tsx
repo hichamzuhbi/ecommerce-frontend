@@ -8,6 +8,7 @@ import { Badge } from '../components/ui/Badge';
 import { ProductGrid } from '../components/products/ProductGrid';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { Spinner } from '../components/ui/Spinner';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../utils/image.utils';
 
 export const ProductDetailPage = () => {
   const { id = '' } = useParams();
@@ -30,7 +31,12 @@ export const ProductDetailPage = () => {
     <PageWrapper>
       <section className="grid gap-8 py-8 lg:grid-cols-2">
         <div className="overflow-hidden rounded-2xl bg-white shadow-md">
-          <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+          <img
+            src={resolveImageUrl(product.imageUrl) || IMAGE_FALLBACK_URL}
+            alt={product.name}
+            className="h-full w-full object-cover"
+            onError={handleImageError}
+          />
         </div>
 
         <div className="space-y-4">

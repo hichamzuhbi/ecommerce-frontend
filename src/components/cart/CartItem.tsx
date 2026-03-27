@@ -1,6 +1,7 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import type { CartItem as CartItemType } from '../../types/cart.types';
 import { formatPrice } from '../../utils/format.utils';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../../utils/image.utils';
 
 interface CartItemProps {
   item: CartItemType;
@@ -12,9 +13,10 @@ export const CartItem = ({ item, onUpdate, onRemove }: CartItemProps) => {
   return (
     <article className="flex gap-3 rounded-2xl bg-white p-4 shadow-md">
       <img
-        src={item.product.imageUrl}
+        src={resolveImageUrl(item.product.imageUrl) || IMAGE_FALLBACK_URL}
         alt={item.product.name}
         className="h-24 w-24 rounded-xl object-cover"
+        onError={handleImageError}
       />
 
       <div className="flex flex-1 flex-col justify-between">

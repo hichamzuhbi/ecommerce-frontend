@@ -7,6 +7,7 @@ import { Spinner } from '../components/ui/Spinner';
 import { useOrderDetail } from '../hooks/useOrders';
 import { formatOrderRef, formatPrice } from '../utils/format.utils';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../utils/image.utils';
 
 export const OrderDetailPage = () => {
   const [search, setSearch] = useState('');
@@ -50,7 +51,12 @@ export const OrderDetailPage = () => {
                 <h2 className="text-lg font-bold text-gray-900">Items</h2>
                 {order.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
-                    <img src={item.product.imageUrl} alt={item.product.name} className="h-16 w-16 rounded-lg object-cover" />
+                    <img
+                      src={resolveImageUrl(item.product.imageUrl) || IMAGE_FALLBACK_URL}
+                      alt={item.product.name}
+                      className="h-16 w-16 rounded-lg object-cover"
+                      onError={handleImageError}
+                    />
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{item.product.name}</p>
                       <p className="text-sm font-medium text-gray-600">
