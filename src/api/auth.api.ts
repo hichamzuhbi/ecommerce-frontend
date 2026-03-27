@@ -1,4 +1,5 @@
 import { axiosInstance } from "./axios.instance";
+import { isAxiosError } from "axios";
 import type { ApiResponse } from "../types/api.types";
 import type {
   AuthPayload,
@@ -44,11 +45,27 @@ export const authApi = {
   },
 
   registerAdmin: async (payload: RegisterAdminInput): Promise<User> => {
-    const { data } = await axiosInstance.post<ApiResponse<User>>(
-      "/auth/register-admin",
-      payload,
-    );
-    return data.data;
+    try {
+      const { data } = await axiosInstance.post<ApiResponse<User>>(
+        "/auth/register-admin",
+        payload,
+      );
+      return data.data;
+    } catch (error) {
+      // Some backend deployments expose only /auth/register for all roles.
+      if (isAxiosError(error) && error.response?.status === 404) {
+        const { data } = await axiosInstance.post<ApiResponse<User>>(
+          "/auth/register",
+          {
+            ...payload,
+            role: "ADMIN",
+          },
+        );
+        return data.data;
+      }
+
+      throw error;
+    }
   },
 
   me: async (): Promise<User> => {
