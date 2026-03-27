@@ -21,3 +21,7 @@ export interface QueryParams {
   search?: string;
   categoryId?: string;
 }
+
+export interface UploadImageResponse {
+  url: string;
+}

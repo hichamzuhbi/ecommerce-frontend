@@ -11,8 +11,8 @@ export const AdminEditProductPage = () => {
   const { data: product, isLoading } = useAdminProduct(id);
   const { mutateAsync, isPending } = useUpdateProduct();
 
-  const onSubmit = async (payload: ProductPayload, uploads: FormData | null): Promise<void> => {
-    await mutateAsync({ id, payload, uploads });
+  const onSubmit = async (payload: ProductPayload): Promise<void> => {
+    await mutateAsync({ id, payload });
     toast.success('Product updated successfully');
     navigate('/admin/products');
   };

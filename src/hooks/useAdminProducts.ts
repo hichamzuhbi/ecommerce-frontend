@@ -41,13 +41,8 @@ export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      payload,
-      uploads,
-    }: {
-      payload: ProductPayload;
-      uploads?: FormData | null;
-    }) => productsApi.create(payload, uploads ?? null),
+    mutationFn: ({ payload }: { payload: ProductPayload }) =>
+      productsApi.create(payload),
     onSuccess: async () => {
       toast.success("Product created successfully");
       await queryClient.invalidateQueries({ queryKey: ["admin-products"] });
@@ -62,15 +57,8 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-      uploads,
-    }: {
-      id: string;
-      payload: ProductPayload;
-      uploads?: FormData | null;
-    }) => productsApi.update(id, payload, uploads ?? null),
+    mutationFn: ({ id, payload }: { id: string; payload: ProductPayload }) =>
+      productsApi.update(id, payload),
     onSuccess: async (_, variables) => {
       toast.success("Product updated successfully");
       await queryClient.invalidateQueries({ queryKey: ["admin-products"] });

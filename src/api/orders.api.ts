@@ -7,19 +7,10 @@ import type {
   OrderStatus,
 } from "../types/order.types";
 import type { Product } from "../types/product.types";
-import { API_BASE_URL } from "../utils/constants";
-
-const PLACEHOLDER = "https://placehold.co/600x600?text=Product";
+import { resolveImageUrl } from "../utils/image.utils";
 
 const toPublicUrl = (value: string | undefined): string => {
-  const s = (value ?? "").trim();
-  if (!s) return PLACEHOLDER;
-  if (s.startsWith("http") || s.startsWith("data:")) return s;
-  if (s.startsWith("/")) {
-    const origin = API_BASE_URL.replace(/\/api\/?$/, "");
-    return `${origin}${s}`;
-  }
-  return s;
+  return resolveImageUrl(value);
 };
 
 const normalizeOrderProduct = (

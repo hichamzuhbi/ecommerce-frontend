@@ -1,48 +1,39 @@
 import type { SyntheticEvent } from 'react';
+import { API_ORIGIN } from './api-base.utils';
 
-const rawImageBaseUrl =
-  import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? '';
+export const IMAGE_FALLBACK_URL = '/images/product-fallback.svg';
 
-const normalizedImageBaseUrl = rawImageBaseUrl.replace(/\/+$/, '');
-
-export const IMAGE_FALLBACK_URL = 'https://placehold.co/600x600?text=Image';
-
-export const resolveImageUrl = (value: string): string => {
-  const candidate = value.trim();
+export const resolveImageUrl = (value?: string): string => {
+  const candidate = value?.trim() ?? '';
 
   if (!candidate) {
-    return '';
+    return IMAGE_FALLBACK_URL;
   }
 
   if (
     candidate.startsWith('http://') ||
     candidate.startsWith('https://') ||
-    candidate.startsWith('blob:') ||
-    candidate.startsWith('data:')
+    candidate.startsWith('data:') ||
+    candidate.startsWith('blob:')
   ) {
     return candidate;
   }
 
-  if (!normalizedImageBaseUrl) {
-    return candidate;
-  }
-
   if (candidate.startsWith('/')) {
-    return `${normalizedImageBaseUrl}${candidate}`;
+    if (!API_ORIGIN) {
+      return candidate;
+    }
+
+    return `${API_ORIGIN}${candidate}`.replace(/([^:]\/)\/+/g, '$1');
   }
 
-  return `${normalizedImageBaseUrl}/${candidate}`;
+  return candidate;
 };
 
 export const handleImageError = (
   event: SyntheticEvent<HTMLImageElement, Event>,
 ): void => {
   const image = event.currentTarget;
-
-  if (image.dataset.fallbackApplied === '1') {
-    return;
-  }
-
-  image.dataset.fallbackApplied = '1';
+  image.onerror = null;
   image.src = IMAGE_FALLBACK_URL;
 };

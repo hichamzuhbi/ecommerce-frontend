@@ -8,8 +8,8 @@ export const AdminAddProductPage = () => {
   const navigate = useNavigate();
   const { mutateAsync, isPending } = useCreateProduct();
 
-  const onSubmit = async (payload: ProductPayload, uploads: FormData | null): Promise<void> => {
-    await mutateAsync({ payload, uploads });
+  const onSubmit = async (payload: ProductPayload): Promise<void> => {
+    await mutateAsync({ payload });
     toast.success('Product added successfully');
     navigate('/admin/products');
   };

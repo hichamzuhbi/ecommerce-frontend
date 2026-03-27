@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { ImageUploader } from './ImageUploader';
 import { useAdminCategories } from '../../hooks/useAdminCategories';
+import { uploadProductImage } from '../../api/uploads.api';
+import { getAccessToken } from '../../utils/token.utils';
 import { generateSlug } from '../../utils/slug.utils';
 import type { Product, ProductPayload } from '../../types/product.types';
 
@@ -23,7 +26,11 @@ const productSchema = z
     imageUrls: z
       .array(
         z.string().refine(
-          (url) => url.startsWith('data:image/') || z.string().url().safeParse(url).success,
+          (url) =>
+            url.startsWith('data:image/') ||
+            url.startsWith('blob:') ||
+            url.startsWith('/') ||
+            z.string().url().safeParse(url).success,
           'Invalid image URL',
         ),
       )
@@ -46,7 +53,7 @@ interface ProductFormProps {
   mode: 'create' | 'edit';
   initialData?: Product;
   isSubmitting?: boolean;
-  onSubmit: (payload: ProductPayload, uploads: FormData | null) => Promise<void>;
+  onSubmit: (payload: ProductPayload) => Promise<void>;
 }
 
 export const ProductForm = ({
@@ -96,25 +103,39 @@ export const ProductForm = ({
   }, [watchedName, isSlugManuallyEdited, setValue]);
 
   const submit = async (values: ProductFormOutput) => {
-    let uploads: FormData | null = null;
-    if (localFiles.length > 0) {
-      uploads = new FormData();
-      localFiles.forEach((file) => uploads?.append('images', file));
-    }
+    try {
+      const persistedImageUrls = values.imageUrls
+        .map((url) => url.trim())
+        .filter((url) => Boolean(url) && !url.startsWith('data:') && !url.startsWith('blob:'));
 
-    const persistedImageUrls =
-      localFiles.length > 0
-        ? values.imageUrls.filter((url) => !url.startsWith('data:'))
-        : values.imageUrls;
+      const uploadedImageUrls: string[] = [];
 
-    await onSubmit(
-      {
+      if (localFiles.length > 0) {
+        const token = getAccessToken();
+
+        if (!token) {
+          throw new Error('You must be logged in as admin to upload product images.');
+        }
+
+        const urls = await Promise.all(
+          localFiles.map((file) => uploadProductImage(file, token)),
+        );
+
+        uploadedImageUrls.push(...urls);
+      }
+
+      const finalImageUrls = Array.from(
+        new Set([...persistedImageUrls, ...uploadedImageUrls]),
+      );
+
+      await onSubmit({
         ...values,
         comparePrice: values.comparePrice || undefined,
-        imageUrls: persistedImageUrls,
-      },
-      uploads,
-    );
+        imageUrls: finalImageUrls,
+      });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not upload product images');
+    }
   };
 
   return (

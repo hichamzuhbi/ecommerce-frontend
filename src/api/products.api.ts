@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from "./axios.instance";
 import type {
   ApiResponse,
@@ -7,7 +6,7 @@ import type {
 } from "../types/api.types";
 import type { Product } from "../types/product.types";
 import type { ProductPayload } from "../types/product.types";
-import { API_BASE_URL } from "../utils/constants";
+import { resolveImageUrl } from "../utils/image.utils";
 
 interface AdminProductQuery {
   page?: number;
@@ -34,34 +33,8 @@ type RawProduct = Partial<Product> & {
   categoryTitle?: string;
 };
 
-const PRODUCT_PLACEHOLDER_IMAGE = "https://placehold.co/600x600?text=Product";
-
-const VALID_DATA_IMAGE_REGEX =
-  /^data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=]+$/;
-
 const toPublicProductImageUrl = (value: string | undefined): string => {
-  const candidate = (value ?? "").trim();
-
-  if (!candidate) {
-    return PRODUCT_PLACEHOLDER_IMAGE;
-  }
-
-  if (candidate.startsWith("http://") || candidate.startsWith("https://")) {
-    return candidate;
-  }
-
-  if (candidate.startsWith("data:")) {
-    return VALID_DATA_IMAGE_REGEX.test(candidate)
-      ? candidate
-      : PRODUCT_PLACEHOLDER_IMAGE;
-  }
-
-  if (candidate.startsWith("/")) {
-    const origin = API_BASE_URL.replace(/\/api\/?$/, "");
-    return `${origin}${candidate}`;
-  }
-
-  return candidate;
+  return resolveImageUrl(value);
 };
 
 const toNumber = (value: unknown): number => {
@@ -123,7 +96,7 @@ const normalizeProduct = (product: RawProduct): Product => {
       return false;
     }
 
-    return toPublicProductImageUrl(url) !== PRODUCT_PLACEHOLDER_IMAGE;
+    return true;
   });
   const primaryImage = toPublicProductImageUrl(
     firstGalleryImage ||
@@ -168,38 +141,6 @@ const normalizePaginatedProducts = (
   };
 };
 
-const buildProductFormData = (
-  payload: ProductPayload,
-  uploads: FormData,
-): FormData => {
-  const formData = new FormData();
-
-  formData.append("name", payload.name);
-  formData.append("slug", payload.slug);
-  formData.append("description", payload.description);
-  formData.append("price", String(payload.price));
-  formData.append("sku", payload.sku);
-  formData.append("stock", String(payload.stock));
-  formData.append("categoryId", payload.categoryId);
-  formData.append("isActive", String(payload.isActive));
-
-  if (typeof payload.comparePrice === "number") {
-    formData.append("comparePrice", String(payload.comparePrice));
-  }
-
-  payload.imageUrls.forEach((url) => {
-    formData.append("imageUrls", url);
-  });
-
-  uploads.getAll("images").forEach((file) => {
-    if (file instanceof File) {
-      formData.append("images", file);
-    }
-  });
-
-  return formData;
-};
-
 export const productsApi = {
   list: async (params: QueryParams): Promise<PaginatedResponse<Product>> => {
     const { data } = await axiosInstance.get<
@@ -238,41 +179,20 @@ export const productsApi = {
     return normalizePaginatedProducts(data.data);
   },
 
-  create: async (
-    payload: ProductPayload,
-    uploads: FormData | null = null,
-  ): Promise<Product> => {
-    const body = uploads ? buildProductFormData(payload, uploads) : payload;
-    try {
-      const { data } = await axiosInstance.post<ApiResponse<RawProduct>>(
-        "/products",
-        body,
-        {
-          headers: uploads
-            ? { "Content-Type": "multipart/form-data" }
-            : undefined,
-        },
-      );
-      return normalizeProduct(data.data);
-    } catch (error: any) {
-      console.log("=== Backend Error ===", error.response?.data);
-      throw error;
-    }
+  create: async (payload: ProductPayload): Promise<Product> => {
+    const { data } = await axiosInstance.post<ApiResponse<RawProduct>>(
+      "/products",
+      payload,
+    );
+    return normalizeProduct(data.data);
   },
   update: async (
     id: string,
     payload: ProductPayload,
-    uploads: FormData | null = null,
   ): Promise<Product> => {
-    const body = uploads ? buildProductFormData(payload, uploads) : payload;
     const { data } = await axiosInstance.patch<ApiResponse<RawProduct>>(
       `/products/${id}`,
-      body,
-      {
-        headers: uploads
-          ? { "Content-Type": "multipart/form-data" }
-          : undefined,
-      },
+      payload,
     );
     return normalizeProduct(data.data);
   },

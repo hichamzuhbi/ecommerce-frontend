@@ -6,9 +6,7 @@ import type {
   CartItem,
   UpdateCartItemInput,
 } from "../types/cart.types";
-import { API_BASE_URL } from "../utils/constants";
-
-const PRODUCT_PLACEHOLDER_IMAGE = "https://placehold.co/600x600?text=Product";
+import { resolveImageUrl } from "../utils/image.utils";
 
 type RawCartProduct = Partial<CartItem["product"]> & {
   image?: string;
@@ -43,26 +41,7 @@ const toNumber = (value: unknown): number => {
 };
 
 const toPublicAssetUrl = (value: string): string => {
-  const candidate = value.trim();
-
-  if (!candidate) {
-    return PRODUCT_PLACEHOLDER_IMAGE;
-  }
-
-  if (
-    candidate.startsWith("http://") ||
-    candidate.startsWith("https://") ||
-    candidate.startsWith("data:")
-  ) {
-    return candidate;
-  }
-
-  if (candidate.startsWith("/")) {
-    const origin = API_BASE_URL.replace(/\/api\/?$/, "");
-    return `${origin}${candidate}`;
-  }
-
-  return candidate;
+  return resolveImageUrl(value);
 };
 
 const normalizeCartItem = (item: RawCartItem): CartItem => {
