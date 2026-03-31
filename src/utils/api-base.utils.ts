@@ -3,7 +3,7 @@ const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 const trimTrailingApiSegment = (value: string): string =>
   value.replace(/\/api\/?$/i, '');
 
-const DEFAULT_API_ORIGIN = 'https://ecommerce-backend-1-kxpv.onrender.com';
+const DEFAULT_API_ORIGIN = 'https://easyshopback-cae6dxddasc5b6gv.westeurope-01.azurewebsites.net';
 
 const rawBaseUrl = (
   import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_ORIGIN
