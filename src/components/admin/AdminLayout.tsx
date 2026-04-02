@@ -8,20 +8,20 @@ export const AdminLayout = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className="hidden h-full w-[260px] lg:block">
+      <div className="hidden h-full w-[260px] shrink-0 lg:block">
         <AdminSidebar />
       </div>
 
       {open ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-gray-900/40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-[260px] bg-white shadow-lg">
+          <div className="absolute left-0 top-0 h-full w-[260px] overflow-y-auto bg-white shadow-lg">
             <AdminSidebar onNavigate={() => setOpen(false)} />
           </div>
         </div>
       ) : null}
 
-      <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+      <main className="min-w-0 flex-1 overflow-y-auto p-4 lg:p-8">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}

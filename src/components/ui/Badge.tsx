@@ -4,7 +4,7 @@ interface BadgeProps {
 }
 
 const styleMap: Record<NonNullable<BadgeProps['variant']>, string> = {
-  default: 'bg-indigo-100 text-indigo-700',
+  default: 'bg-sky-100 text-sky-700',
   success: 'bg-green-100 text-green-700',
   warning: 'bg-yellow-100 text-yellow-700',
   danger: 'bg-red-100 text-red-700',

@@ -3,10 +3,10 @@ import { Button } from '../components/ui/Button';
 
 export const WelcomePage = () => {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 via-indigo-800 to-purple-700 px-4">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-sky-900 to-emerald-700 px-4">
       <div className="absolute -left-16 top-14 h-44 w-44 animate-float rounded-full bg-cyan-300/20 blur-2xl" />
       <div className="absolute right-0 top-1/3 h-64 w-64 animate-float-delayed rounded-full bg-indigo-300/20 blur-2xl" />
-      <div className="absolute bottom-10 left-1/3 h-36 w-36 animate-float rounded-full bg-purple-200/20 blur-2xl" />
+      <div className="absolute bottom-10 left-1/3 h-36 w-36 animate-float rounded-full bg-emerald-200/20 blur-2xl" />
 
       <section className="relative z-10 mx-auto max-w-2xl text-center text-white">
         <h1 className="text-5xl font-black tracking-tight sm:text-7xl">EasyShop</h1>

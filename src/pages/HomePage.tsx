@@ -120,7 +120,7 @@ export const HomePage = () => {
           {/* ── CENTER CONTENT ── */}
           <div className="space-y-4">
             {/* Marquee promo banner */}
-            <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-2.5">
+            <div className="overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-sky-700 to-emerald-500 py-2.5">
               <div className="animate-marquee whitespace-nowrap">
                 {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((text, i) => (
                   <span key={i} className="mx-10 text-sm font-bold text-white">
@@ -152,16 +152,16 @@ export const HomePage = () => {
           </div>
 
           {/* ── RIGHT SIDEBAR ── */}
-          <aside className="hidden h-fit space-y-3 rounded-2xl bg-white p-4 shadow-sm lg:block">
+          <aside className="hidden h-fit space-y-3 rounded-2xl bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:block lg:self-start">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Quick Panels</p>
 
             {/* Shipping Offer */}
             <button
               onClick={() => setOpenModal('shipping')}
-              className="group w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-left transition-all duration-200 hover:border-indigo-200 hover:bg-indigo-50"
+              className="group w-full rounded-xl border border-gray-100 bg-gray-50 p-3 text-left transition-all duration-200 hover:border-sky-200 hover:bg-sky-50"
             >
               <div className="mb-1 flex items-center gap-2">
-                <Truck size={15} className="text-indigo-500 transition-colors group-hover:text-indigo-700" />
+                <Truck size={15} className="text-sky-500 transition-colors group-hover:text-sky-700" />
                 <p className="text-sm font-bold text-gray-900">Shipping Offer</p>
               </div>
               <p className="text-xs font-medium text-gray-500">Free shipping on orders above $80</p>
@@ -233,13 +233,13 @@ export const HomePage = () => {
               {openModal === 'shipping' && (
                 <>
                   <ModalHeader
-                    icon={<Truck size={18} className="text-indigo-600" />}
+                    icon={<Truck size={18} className="text-sky-600" />}
                     title="Shipping Offer"
                     onClose={closeModal}
                   />
                   <div className="space-y-4 text-sm">
-                    <div className="rounded-xl bg-indigo-50 p-4">
-                      <p className="font-bold text-indigo-700">🎉 Free Shipping on orders over $80!</p>
+                    <div className="rounded-xl bg-sky-50 p-4">
+                      <p className="font-bold text-sky-700">🎉 Free Shipping on orders over $80!</p>
                     </div>
                     <table className="w-full text-sm">
                       <thead>

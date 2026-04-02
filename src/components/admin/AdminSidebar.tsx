@@ -8,7 +8,7 @@ interface AdminSidebarProps {
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-all duration-200 ${
-    isActive ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+    isActive ? 'bg-sky-600 text-white' : 'text-gray-600 hover:bg-gray-100'
   }`;
 
 export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
@@ -24,8 +24,8 @@ export const AdminSidebar = ({ onNavigate }: AdminSidebarProps) => {
     <aside className="flex h-full w-full flex-col border-r border-gray-200 bg-white p-4">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-xl font-black tracking-tight text-indigo-700">EasyShop</p>
-          <span className="mt-1 inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-700">
+          <p className="text-xl font-black tracking-tight text-slate-900">EasyShop</p>
+          <span className="mt-1 inline-flex rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700">
             Admin
           </span>
         </div>

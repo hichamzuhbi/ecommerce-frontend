@@ -25,12 +25,12 @@ export const TrendingPage = () => {
       <PageWrapper>
         <div className="space-y-4 py-6">
           {/* Hero banner */}
-          <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+          <div className="rounded-2xl bg-gradient-to-r from-slate-950 to-sky-600 p-6 text-white">
             <div className="mb-2 flex items-center gap-3">
               <Sparkles size={24} />
               <h1 className="text-2xl font-black">Trending Picks</h1>
             </div>
-            <p className="text-sm text-indigo-100">
+            <p className="text-sm text-sky-100">
               The hottest products everyone is buying right now
             </p>
           </div>

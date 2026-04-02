@@ -76,7 +76,7 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         </div>
 
         <motion.button
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
           whileTap={{ scale: 0.93 }}
           onClick={() => void onAddToCart(product.id)}
         >

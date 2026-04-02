@@ -66,7 +66,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
     : 'G';
 
   const roleBadgeClass = hasAdminAccess(user)
-    ? 'bg-purple-100 text-purple-700'
+    ? 'bg-sky-100 text-sky-700'
     : 'bg-emerald-100 text-emerald-700';
 
   return (
@@ -75,7 +75,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
         isScrolled ? 'shadow-[0_12px_40px_-20px_rgba(79,70,229,0.45)]' : ''
       }`}
     >
-      <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-500 text-center text-xs font-semibold text-white">
+      <div className="bg-gradient-to-r from-slate-950 via-sky-700 to-emerald-500 text-center text-xs font-semibold text-white">
         <div className="app-shell py-1.5">Free shipping over $80</div>
       </div>
 
@@ -87,7 +87,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
               className="rounded-xl bg-white/80 px-3 py-2 text-xl font-extrabold tracking-tight text-gray-900 ring-1 ring-gray-200/70 transition-all duration-200 hover:ring-indigo-200"
             >
               Easy
-              <span className="bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent">Shop</span>
+              <span className="bg-gradient-to-r from-sky-700 to-emerald-500 bg-clip-text text-transparent">Shop</span>
             </Link>
 
             <nav className="hidden items-center gap-1 lg:flex">
@@ -100,7 +100,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                       className="group relative rounded-xl px-3 py-2 text-sm font-semibold text-gray-600 transition-colors duration-200 hover:text-indigo-600"
                     >
                       {item.label}
-                      <span className="absolute inset-x-3 bottom-1 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-transform duration-200 group-hover:scale-x-100" />
+                      <span className="absolute inset-x-3 bottom-1 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-transform duration-200 group-hover:scale-x-100" />
                     </a>
                   );
                 }
@@ -112,12 +112,12 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                     end={item.to === '/home'}
                     className={({ isActive }) =>
                       `group relative rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 ${
-                        isActive ? 'text-indigo-700' : 'text-gray-600 hover:text-indigo-600'
+                        isActive ? 'text-sky-700' : 'text-gray-600 hover:text-sky-600'
                       }`
                     }
                   >
                     {item.label}
-                    <span className="absolute inset-x-3 bottom-1 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-transform duration-200 group-hover:scale-x-100" />
+                    <span className="absolute inset-x-3 bottom-1 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-transform duration-200 group-hover:scale-x-100" />
                   </NavLink>
                 );
               })}
@@ -129,7 +129,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                 value={search}
                 onChange={(event) => onSearchChange(event.target.value)}
                 placeholder="Search products..."
-                className="w-full rounded-full border border-white/60 bg-white/90 py-2 pl-9 pr-4 text-sm font-medium text-gray-900 outline-none ring-1 ring-gray-200/80 transition-all duration-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-full border border-white/60 bg-white/90 py-2 pl-9 pr-4 text-sm font-medium text-gray-900 outline-none ring-1 ring-gray-200/80 transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
                 aria-label="Search products"
               />
             </div>
@@ -138,7 +138,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
               {hasAdminAccess(user) ? (
                 <Link
                   to="/admin/dashboard"
-                  className="hidden rounded-xl bg-indigo-50 px-3 py-2 text-xs font-bold uppercase tracking-wide text-indigo-700 transition-all duration-200 hover:bg-indigo-100 md:inline-flex"
+                  className="hidden rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold uppercase tracking-wide text-sky-700 transition-all duration-200 hover:bg-sky-100 md:inline-flex"
                 >
                   Admin
                 </Link>
@@ -146,10 +146,10 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
 
               <Link
                 to="/cart"
-                className="relative rounded-xl p-2 text-gray-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-indigo-600"
+                className="relative rounded-xl p-2 text-gray-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-sky-600"
               >
                 <ShoppingCart size={20} />
-                <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-pink-500 px-1 text-xs font-bold text-white">
+                <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-emerald-500 px-1 text-xs font-bold text-white">
                   {totalItems}
                 </span>
               </Link>
@@ -160,10 +160,10 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/85 px-3 py-2 ring-1 ring-gray-200/80 transition-all duration-200 hover:ring-indigo-200"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/85 px-3 py-2 ring-1 ring-gray-200/80 transition-all duration-200 hover:ring-sky-200"
                   type="button"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-pink-500 text-xs font-black text-white">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-emerald-500 text-xs font-black text-white">
                     {initials}
                   </span>
                   <span className="max-w-[120px] truncate text-sm font-semibold text-gray-800">
@@ -185,14 +185,14 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                     >
                       <Link
                         to="/profile"
-                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-sky-50 hover:text-sky-700"
                       >
                         <User size={14} />
                         Profile
                       </Link>
                       <Link
                         to="/orders"
-                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-sky-50 hover:text-sky-700"
                       >
                         <ShoppingCart size={14} />
                         Orders
@@ -206,7 +206,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                         Logout
                       </button>
                       <div className="mt-2 border-t border-gray-100 px-3 pt-2">
-                        <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold ${roleBadgeClass}`}>
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold ${roleBadgeClass}`}>
                           {user.role ?? 'CUSTOMER'}
                         </span>
                       </div>
@@ -232,7 +232,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search products..."
-              className="w-full rounded-full border border-white/60 bg-white/90 py-2 pl-9 pr-4 text-sm font-medium text-gray-900 outline-none ring-1 ring-gray-200/80 transition-all duration-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+              className="w-full rounded-full border border-white/60 bg-white/90 py-2 pl-9 pr-4 text-sm font-medium text-gray-900 outline-none ring-1 ring-gray-200/80 transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
               aria-label="Search products"
             />
           </div>
@@ -253,7 +253,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                         <a
                           key={item.label}
                           href={item.href}
-                          className="block rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                          className="block rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-sky-50 hover:text-sky-700"
                         >
                           {item.label}
                         </a>
@@ -269,8 +269,8 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                         className={({ isActive }) =>
                           `block rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
                             isActive
-                              ? 'bg-indigo-50 text-indigo-700'
-                              : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-700'
+                              ? 'bg-sky-50 text-sky-700'
+                              : 'text-gray-700 hover:bg-sky-50 hover:text-sky-700'
                           }`
                         }
                       >
@@ -299,7 +299,7 @@ export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
                     <Link
                       to="/admin/dashboard"
                       onClick={() => setMenuOpen(false)}
-                      className="block rounded-xl px-3 py-2 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-50"
+                      className="block rounded-xl px-3 py-2 text-sm font-semibold text-sky-700 transition-colors hover:bg-sky-50"
                     >
                       Admin Panel
                     </Link>

@@ -37,7 +37,7 @@ export const DealsPage = () => {
       <PageWrapper>
         <div className="space-y-4 py-6">
           {/* Hero banner */}
-          <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 p-6 text-white">
+          <div className="rounded-2xl bg-gradient-to-r from-slate-950 to-emerald-600 p-6 text-white">
             <div className="mb-2 flex items-center gap-3">
               <Megaphone size={24} />
               <h1 className="text-2xl font-black">Weekly Deals</h1>

@@ -31,18 +31,18 @@ export const WishlistPage = () => {
       <PageWrapper>
         <div className="space-y-4 py-6">
           {/* Hero banner */}
-          <div className="rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 p-6 text-white">
+          <div className="rounded-2xl bg-gradient-to-r from-slate-950 to-sky-600 p-6 text-white">
             <div className="mb-2 flex items-center gap-3">
               <Heart size={24} className="fill-white" />
               <h1 className="text-2xl font-black">My Wishlist</h1>
             </div>
-            <p className="text-sm text-pink-100">
+            <p className="text-sm text-sky-100">
               {wishlist.length} saved item{wishlist.length !== 1 ? 's' : ''}
             </p>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-4">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-80 animate-pulse rounded-2xl bg-white" />
               ))}
@@ -54,7 +54,7 @@ export const WishlistPage = () => {
             />
           ) : (
             <motion.div
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              className="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-4"
               initial="hidden"
               animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
@@ -90,11 +90,11 @@ export const WishlistPage = () => {
                       <h3 className="line-clamp-1 text-sm font-bold text-gray-900">
                         {product.name}
                       </h3>
-                      <p className="text-base font-bold text-indigo-600">
+                      <p className="text-base font-bold text-sky-600">
                         {formatPrice(product.price)}
                       </p>
                       <button
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
                         onClick={() => void addItem(product.id, 1)}
                       >
                         <ShoppingCart size={14} />
