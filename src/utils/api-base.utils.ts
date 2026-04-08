@@ -6,7 +6,10 @@ const trimTrailingApiSegment = (value: string): string =>
 const DEFAULT_API_ORIGIN = 'https://easyshopback-cae6dxddasc5b6gv.westeurope-01.azurewebsites.net';
 
 const rawBaseUrl = (
-  import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_ORIGIN
+  import.meta.env.VITE_API_URL ??
+  import.meta.env.REACT_APP_API_URL ??
+  import.meta.env.VITE_API_BASE_URL ??
+  DEFAULT_API_ORIGIN
 ).trim();
 
 export const API_ORIGIN = trimTrailingApiSegment(trimTrailingSlash(rawBaseUrl));
