@@ -1,18 +1,41 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { Badge } from '../components/ui/Badge';
 import { Navbar } from '../components/layout/Navbar';
 import { OrderTimeline } from '../components/orders/OrderTimeline';
 import { Spinner } from '../components/ui/Spinner';
 import { useOrderDetail } from '../hooks/useOrders';
+import { useInitiatePayment } from '../hooks/usePayments';
 import { formatOrderRef, formatPrice } from '../utils/format.utils';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { handleImageError, IMAGE_FALLBACK_URL, resolveImageUrl } from '../utils/image.utils';
+import { paymentsApi } from '../api/payments.api';
+import { Button } from '../components/ui/Button';
+
+const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//i.test(value);
 
 export const OrderDetailPage = () => {
   const [search, setSearch] = useState('');
   const { id = '' } = useParams();
   const { data: order, isLoading } = useOrderDetail(id);
+  const queryClient = useQueryClient();
+  const { mutateAsync: initiatePayment, isPending: isInitiating } = useInitiatePayment();
+  const { mutateAsync: refreshPaymentStatus, isPending: isRefreshing } = useMutation({
+    mutationFn: () => paymentsApi.status(id),
+    onSuccess: async (data) => {
+      const status = data.paymentStatus ?? data.status;
+      if (status) {
+        toast.success(`Payment status: ${status}`);
+      } else {
+        toast.success('Payment status updated');
+      }
+      await queryClient.invalidateQueries({ queryKey: ['order', id] });
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onError: () => toast.error('Could not refresh payment status'),
+  });
 
   if (isLoading || !order) {
     return (
@@ -24,6 +47,8 @@ export const OrderDetailPage = () => {
       </main>
     );
   }
+
+  const canPayNow = order.paymentStatus === 'UNPAID' && order.paymentMethod !== 'COD';
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -71,6 +96,50 @@ export const OrderDetailPage = () => {
 
             <div className="space-y-4">
               <OrderTimeline status={order.status} />
+              <div className="rounded-2xl bg-white p-5 shadow-md">
+                <h3 className="text-lg font-bold text-gray-900">Payment</h3>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Badge variant={order.paymentStatus === 'PAID' ? 'success' : 'warning'}>
+                    {order.paymentStatus}
+                  </Badge>
+                  <span className="text-sm font-semibold text-gray-700">
+                    Method: {order.paymentMethod}
+                  </span>
+                </div>
+                {order.paymentMethod === 'COD' ? (
+                  <p className="mt-3 text-sm font-medium text-gray-600">
+                    Cash on delivery - payment is collected when the order arrives.
+                  </p>
+                ) : (
+                  <p className="mt-3 text-sm font-medium text-gray-600">
+                    Use Pay Now to complete your payment securely.
+                  </p>
+                )}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {canPayNow ? (
+                    <Button isLoading={isInitiating} onClick={async () => {
+                      const response = await initiatePayment({
+                        orderId: order.id,
+                        method: order.paymentMethod,
+                      });
+                      if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
+                        window.location.href = response.paymentUrl;
+                        return;
+                      }
+                      toast.success('Payment initiated. Complete the payment with your provider.');
+                    }}>
+                      Pay Now
+                    </Button>
+                  ) : null}
+                  <Button
+                    variant="secondary"
+                    isLoading={isRefreshing}
+                    onClick={() => void refreshPaymentStatus()}
+                  >
+                    Refresh Status
+                  </Button>
+                </div>
+              </div>
               <div className="rounded-2xl bg-white p-5 shadow-md">
                 <h3 className="text-lg font-bold text-gray-900">Shipping Address</h3>
                 <p className="mt-2 text-sm font-medium text-gray-600">

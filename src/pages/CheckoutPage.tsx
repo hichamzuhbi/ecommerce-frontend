@@ -6,11 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { PageWrapper } from '../components/layout/PageWrapper';
-import { usePayments } from '../hooks/usePayments';
+import toast from 'react-hot-toast';
+import { useInitiatePayment, usePayments } from '../hooks/usePayments';
 import { useCreateOrder } from '../hooks/useOrders';
 import { useCart } from '../hooks/useCart';
 import type { PaymentMethod } from '../types/order.types';
 import { formatPrice } from '../utils/format.utils';
+
+const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//i.test(value);
 
 const shippingSchema = z.object({
   firstName: z.string().min(2),
@@ -26,6 +29,7 @@ type ShippingFormValues = z.infer<typeof shippingSchema>;
 export const CheckoutPage = () => {
   const navigate = useNavigate();
   const { data: methods = [] } = usePayments();
+  const { mutateAsync: initiatePayment, isPending: isPaymentPending } = useInitiatePayment();
   const { mutateAsync: createOrder, isPending } = useCreateOrder();
   const { totalPrice, clearCart } = useCart();
   const [step, setStep] = useState(1);
@@ -43,10 +47,26 @@ export const CheckoutPage = () => {
   const handleShippingSubmit = () => setStep(2);
 
   const placeOrder = async () => {
-    await createOrder({
+    const createdOrder = await createOrder({
       shippingAddress: getValues(),
       paymentMethod,
     });
+
+    if (paymentMethod !== 'COD') {
+      const response = await initiatePayment({
+        orderId: createdOrder.id,
+        method: paymentMethod,
+      });
+
+      if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
+        await clearCart();
+        window.location.href = response.paymentUrl;
+        return;
+      }
+
+      toast.success('Payment initiated. Complete the payment with your provider.');
+    }
+
     await clearCart();
     navigate('/orders');
   };
@@ -111,7 +131,7 @@ export const CheckoutPage = () => {
               <Button variant="secondary" onClick={() => setStep(2)}>
                 Back
               </Button>
-              <Button isLoading={isPending} onClick={() => void placeOrder()}>
+              <Button isLoading={isPending || isPaymentPending} onClick={() => void placeOrder()}>
                 Place Order
               </Button>
             </div>
