@@ -8,7 +8,8 @@ import type {
 } from "../types/payment.types";
 import type { PaymentMethod } from "../types/order.types";
 
-const normalizePaymentMethod = (value: string): PaymentMethod | null => {
+const normalizePaymentMethod = (value: unknown): PaymentMethod | null => {
+  if (typeof value !== "string") return null;
   const normalized = value.trim().toUpperCase().replace(/\s+/g, "_");
   if (normalized === "CREDIT_CARD") return "CREDIT_CARD";
   if (normalized === "PAYPAL") return "PAYPAL";
@@ -39,9 +40,9 @@ export const paymentsApi = {
   initiate: async (
     payload: InitiatePaymentInput,
   ): Promise<InitiatePaymentResponse> => {
-    const normalizedMethod = normalizePaymentMethod(payload.method);
+    const normalizedMethod = normalizePaymentMethod(payload?.method);
     if (!normalizedMethod) {
-      throw new Error("Invalid payment method");
+      throw new Error("Invalid or missing payment method");
     }
     const { data } = await axiosInstance.post<
       ApiResponse<InitiatePaymentResponse>

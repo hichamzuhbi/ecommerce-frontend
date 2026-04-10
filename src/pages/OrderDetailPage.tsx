@@ -48,7 +48,10 @@ export const OrderDetailPage = () => {
     );
   }
 
-  const canPayNow = order.paymentStatus === 'UNPAID' && order.paymentMethod !== 'COD';
+  const canPayNow =
+    order.paymentStatus === 'UNPAID' &&
+    Boolean(order.paymentMethod) &&
+    order.paymentMethod !== 'COD';
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -117,17 +120,24 @@ export const OrderDetailPage = () => {
                 )}
                 <div className="mt-4 flex flex-wrap gap-2">
                   {canPayNow ? (
-                    <Button isLoading={isInitiating} onClick={async () => {
-                      const response = await initiatePayment({
-                        orderId: order.id,
-                        method: order.paymentMethod,
-                      });
-                      if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
-                        window.location.href = response.paymentUrl;
-                        return;
-                      }
-                      toast.success('Payment initiated. Complete the payment with your provider.');
-                    }}>
+                    <Button
+                      isLoading={isInitiating}
+                      onClick={async () => {
+                        if (!order.paymentMethod) {
+                          toast.error('Payment method is missing for this order.');
+                          return;
+                        }
+                        const response = await initiatePayment({
+                          orderId: order.id,
+                          method: order.paymentMethod,
+                        });
+                        if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
+                          window.location.href = response.paymentUrl;
+                          return;
+                        }
+                        toast.success('Payment initiated. Complete the payment with your provider.');
+                      }}
+                    >
                       Pay Now
                     </Button>
                   ) : null}
