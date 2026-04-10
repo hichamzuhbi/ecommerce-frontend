@@ -15,7 +15,8 @@ export const useInitiatePayment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: InitiatePaymentInput) => paymentsApi.initiate(payload),
+    mutationFn: (payload: InitiatePaymentInput) =>
+      paymentsApi.initiate(payload),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["order", variables.orderId],
