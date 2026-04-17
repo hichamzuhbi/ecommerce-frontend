@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { Badge } from '../components/ui/Badge';
 import { Navbar } from '../components/layout/Navbar';
@@ -20,6 +20,11 @@ export const OrderDetailPage = () => {
   const [search, setSearch] = useState('');
   const { id = '' } = useParams();
   const { data: order, isLoading } = useOrderDetail(id);
+  const { data: paymentStatus } = useQuery({
+    queryKey: ['payment', id],
+    queryFn: () => paymentsApi.status(id),
+    enabled: Boolean(id),
+  });
   const queryClient = useQueryClient();
   const { mutateAsync: initiatePayment, isPending: isInitiating } = useInitiatePayment();
   const { mutateAsync: refreshPaymentStatus, isPending: isRefreshing } = useMutation({
@@ -48,10 +53,10 @@ export const OrderDetailPage = () => {
     );
   }
 
+  const effectivePaymentMethod = paymentStatus?.method ?? 'CREDIT_CARD';
   const canPayNow =
     order.paymentStatus === 'UNPAID' &&
-    Boolean(order.paymentMethod) &&
-    order.paymentMethod !== 'COD';
+    effectivePaymentMethod !== 'COD';
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -106,10 +111,10 @@ export const OrderDetailPage = () => {
                     {order.paymentStatus}
                   </Badge>
                   <span className="text-sm font-semibold text-gray-700">
-                    Method: {order.paymentMethod}
+                    Method: {effectivePaymentMethod}
                   </span>
                 </div>
-                {order.paymentMethod === 'COD' ? (
+                {effectivePaymentMethod === 'COD' ? (
                   <p className="mt-3 text-sm font-medium text-gray-600">
                     Cash on delivery - payment is collected when the order arrives.
                   </p>
@@ -123,19 +128,19 @@ export const OrderDetailPage = () => {
                     <Button
                       isLoading={isInitiating}
                       onClick={async () => {
-                        if (!order.paymentMethod) {
-                          toast.error('Payment method is missing for this order.');
-                          return;
-                        }
+                        localStorage.setItem('pendingOrderId', order.id);
                         const response = await initiatePayment({
                           orderId: order.id,
-                          method: order.paymentMethod,
+                          method: effectivePaymentMethod,
                         });
                         if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
                           window.location.href = response.paymentUrl;
                           return;
                         }
-                        toast.success('Payment initiated. Complete the payment with your provider.');
+                        if (effectivePaymentMethod !== 'COD') {
+                          const paymentId = response.paymentId ?? '';
+                          window.location.href = `/payment/success?paymentId=${encodeURIComponent(paymentId)}&orderId=${order.id}&mock=true`;
+                        }
                       }}
                     >
                       Pay Now

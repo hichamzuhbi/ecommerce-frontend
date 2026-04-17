@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -34,6 +34,7 @@ export const CheckoutPage = () => {
   const { totalPrice, clearCart } = useCart();
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CREDIT_CARD');
+  const [cardholderName, setCardholderName] = useState('');
 
   const {
     register,
@@ -44,31 +45,69 @@ export const CheckoutPage = () => {
     resolver: zodResolver(shippingSchema),
   });
 
+  const paymentSummary = useMemo(() => {
+    if (paymentMethod === 'PAYPAL') {
+      return {
+        title: 'Pay with PayPal',
+        description: 'You will be redirected to PayPal checkout powered by Stripe.',
+        ctaLabel: 'Pay with PayPal',
+      };
+    }
+    if (paymentMethod === 'COD') {
+      return {
+        title: 'Cash on Delivery',
+        description: 'Place your order now and pay the courier on delivery.',
+        ctaLabel: 'Place Order',
+      };
+    }
+    return {
+      title: 'Pay by Credit Card',
+      description: 'You will be redirected to a secure card payment page.',
+      ctaLabel: 'Pay Now',
+    };
+  }, [paymentMethod]);
+
   const handleShippingSubmit = () => setStep(2);
 
   const placeOrder = async () => {
-    const createdOrder = await createOrder({
-      shippingAddress: getValues(),
-      paymentMethod,
-    });
+    try {
+      const createdOrder = await createOrder({
+        shippingAddress: getValues(),
+        paymentMethod,
+      });
 
-    if (paymentMethod !== 'COD') {
+      localStorage.setItem('pendingOrderId', createdOrder.id);
+
       const response = await initiatePayment({
         orderId: createdOrder.id,
         method: paymentMethod,
       });
 
+      await clearCart();
+
       if (response.paymentUrl && isAbsoluteUrl(response.paymentUrl)) {
-        await clearCart();
         window.location.href = response.paymentUrl;
         return;
       }
 
-      toast.success('Payment initiated. Complete the payment with your provider.');
-    }
+      if (paymentMethod !== 'COD') {
+        const paymentId = response.paymentId ?? '';
+        navigate(
+          `/payment/success?paymentId=${encodeURIComponent(paymentId)}&orderId=${createdOrder.id}&mock=true`,
+        );
+        return;
+      }
 
-    await clearCart();
-    navigate('/orders');
+      if (paymentMethod === 'COD') {
+        navigate(`/payment/success?method=COD&orderId=${createdOrder.id}`);
+        return;
+      }
+
+      toast.error('Payment could not be started. You can retry from your order page.');
+      navigate(`/orders/${createdOrder.id}`);
+    } catch {
+      toast.error('Could not place the order. Please try again.');
+    }
   };
 
   return (
@@ -96,12 +135,20 @@ export const CheckoutPage = () => {
             <h2 className="text-lg font-bold text-gray-900">Step 2: Payment Method</h2>
             <div className="space-y-2">
               {methods.map((method) => (
-                <label key={method.value} className="flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 p-3">
+                <label
+                  key={method.value}
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all duration-200 ${
+                    paymentMethod === method.value
+                      ? 'border-sky-200 bg-sky-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="paymentMethod"
+                    value={method.value}
                     checked={paymentMethod === method.value}
-                    onChange={() => setPaymentMethod(method.value)}
+                    onChange={(event) => setPaymentMethod(event.currentTarget.value as PaymentMethod)}
                     className="mt-1"
                   />
                   <div>
@@ -111,6 +158,42 @@ export const CheckoutPage = () => {
                 </label>
               ))}
             </div>
+            {paymentMethod === 'CREDIT_CARD' ? (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500">Card Details</h3>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Input
+                    label="Card Number"
+                    placeholder="1234 5678 9012 3456"
+                    name="cardNumber"
+                    autoComplete="cc-number"
+                  />
+                  <Input
+                    label="Expiry Date"
+                    placeholder="MM/YY"
+                    name="expiryDate"
+                    autoComplete="cc-exp"
+                  />
+                  <Input
+                    label="CVV"
+                    placeholder="123"
+                    name="cvv"
+                    autoComplete="cc-csc"
+                  />
+                  <Input
+                    label="Cardholder Name"
+                    placeholder="Jane Doe"
+                    name="cardholderName"
+                    autoComplete="cc-name"
+                    value={cardholderName}
+                    onChange={(event) => setCardholderName(event.target.value)}
+                  />
+                </div>
+                <p className="mt-3 text-xs font-medium text-gray-500">
+                  Card details are captured for display only. You will complete payment securely on the next page.
+                </p>
+              </div>
+            ) : null}
             <div className="flex gap-3">
               <Button variant="secondary" onClick={() => setStep(1)}>
                 Back
@@ -123,16 +206,17 @@ export const CheckoutPage = () => {
         {step === 3 ? (
           <section className="space-y-4 rounded-2xl bg-white p-6 shadow-md">
             <h2 className="text-lg font-bold text-gray-900">Step 3: Order Summary</h2>
-            <p className="text-sm font-medium text-gray-600">
-              Payment: <span className="font-semibold text-gray-900">{paymentMethod}</span>
-            </p>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="text-sm font-semibold text-gray-700">{paymentSummary.title}</p>
+              <p className="mt-1 text-sm font-medium text-gray-600">{paymentSummary.description}</p>
+            </div>
             <p className="text-xl font-bold text-indigo-600">Total: {formatPrice(totalPrice)}</p>
             <div className="flex gap-3">
               <Button variant="secondary" onClick={() => setStep(2)}>
                 Back
               </Button>
               <Button isLoading={isPending || isPaymentPending} onClick={() => void placeOrder()}>
-                Place Order
+                {paymentSummary.ctaLabel}
               </Button>
             </div>
           </section>

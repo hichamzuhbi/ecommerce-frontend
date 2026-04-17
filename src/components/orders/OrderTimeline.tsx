@@ -7,7 +7,8 @@ interface OrderTimelineProps {
 }
 
 export const OrderTimeline = ({ status }: OrderTimelineProps) => {
-  const activeIndex = Math.max(steps.indexOf(status), 0);
+  const normalizedStatus: OrderStatus = status === 'CONFIRMED' ? 'PAID' : status;
+  const activeIndex = Math.max(steps.indexOf(normalizedStatus), 0);
 
   return (
     <div className="space-y-3 rounded-2xl bg-white p-5 shadow-md">

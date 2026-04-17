@@ -16,6 +16,8 @@ import { CartPage } from '../pages/CartPage';
 import { CheckoutPage } from '../pages/CheckoutPage';
 import { OrdersPage } from '../pages/OrdersPage';
 import { OrderDetailPage } from '../pages/OrderDetailPage';
+import { PaymentSuccessPage } from '../pages/PaymentSuccessPage';
+import { PaymentCancelPage } from '../pages/PaymentCancelPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { AdminLayout } from '../components/admin/AdminLayout';
 import { AdminDashboardPage } from '../pages/admin/AdminDashboardPage';
@@ -46,6 +48,8 @@ export const AppRouter = () => {
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/payment/cancel" element={<PaymentCancelPage />} />
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/orders/:id" element={<OrderDetailPage />} />
       </Route>

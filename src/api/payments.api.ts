@@ -58,4 +58,12 @@ export const paymentsApi = {
     >(`/payments/${orderId}`);
     return data.data;
   },
+  mockWebhook: async (rawBody: string, signature: string) => {
+    await axiosInstance.post<ApiResponse<unknown>>('/payments/webhook', rawBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'stripe-signature': signature,
+      },
+    });
+  },
 };
